@@ -1,7 +1,8 @@
 from rest_framework import serializers
 
 from market.models import Product, Category, SubCategory, Author, Review, Order, OrderItem, Cart, CartItem, Payment
-
+from exceptions.error_messages import ErrorCodes
+from exceptions.exception import CustomAPIException
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -30,10 +31,10 @@ class ProductPartialUpdateSerializer(serializers.Serializer):
     
     def validate(self, data):
         if data.get('category') is not None and data.get('category') < 1:
-            raise CustomApiException(ErrorCodes.VALIDATION_FAILED,
+            raise CustomAPIException(ErrorCodes.VALIDATION_FAILED,
                                      message="category id must be positive integer")
         if data.get('subcategory') is not None and data.get('subcategory') < 1:
-            raise CustomApiException(ErrorCodes.VALIDATION_FAILED,
+            raise CustomAPIException(ErrorCodes.VALIDATION_FAILED,
                                      message="subcategory id must be positive integer")
         return data
     
@@ -47,13 +48,13 @@ class ProductFilterSerializer(serializers.Serializer):
 
     def validate(self, data):
         if data.get('max_price') and data.get('min_price') and data.get('min_price') > data.get('max_price'):
-            raise CustomApiException(ErrorCodes.VALIDATION_FAILED,
+            raise CustomAPIException(ErrorCodes.VALIDATION_FAILED,
                                      message='min_price must be less than max_price')
         if data.get('category') is not None and data.get('category') < 1:
-            raise CustomApiException(ErrorCodes.VALIDATION_FAILED,
+            raise CustomAPIException(ErrorCodes.VALIDATION_FAILED,
                                      message="category id must be positive integer")
         if data.get('subcategory') is not None and data.get('subcategory') < 1:
-            raise CustomApiException(ErrorCodes.VALIDATION_FAILED,
+            raise CustomAPIException(ErrorCodes.VALIDATION_FAILED,
                                      message="subcategory id must be positive integer")
         return data
 

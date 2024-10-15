@@ -197,8 +197,27 @@ class ReviewApiView(ViewSet):
             raise CustomAPIException(ErrorCodes.VALIDATION_FAILED, serializer.errors)
         serializer.save()
         return Response(data={'result': serializer.data, 'ok': True}, status=status.HTTP_201_CREATED)
-    
-    # update need oneself
+
+    @swagger_auto_schema(
+        operation_summary='Review update',
+        operation_description='Review update',
+        request_body=ReviewSerializer,
+        responses={200: ReviewSerializer()},
+        tags=['Review']
+    )
+    @is_authenticated_user
+    def update(self, request, pk):
+        data = request.data
+        data.update({'user': request.user.id})
+        review = Review.objects.filter(id=pk, user_id=request.user.id).first()
+        if not review:
+            raise CustomAPIException(ErrorCodes.NOT_FOUND)
+        serializer = ReviewSerializer(review, data=data, partial=True)
+        if not serializer.is_valid():
+            raise CustomAPIException(ErrorCodes.VALIDATION_FAILED, serializer.errors)
+        serializer.save()
+        return Response(data={'result': serializer.data, 'ok': True}, status=status.HTTP_200_OK)
+
 
 
 class AuthorApiView(ViewSet):
